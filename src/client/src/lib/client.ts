@@ -17,6 +17,14 @@ export class Client {
       baseURL: url || apiUrl,
       headers: headers,
     });
+    this._client.interceptors.response.use(function (response) {
+      // Do something with response data
+      return response;
+    }, function (error) {
+      // Do something with response error
+      // console.log(error,'error', ?.message)
+      return Promise.reject(new Error(error.response?.data?.message));
+    });
   }
 
   private selectApiTarget(): string {
@@ -36,7 +44,10 @@ export class Client {
   }
 
   async getTasks(listId: number): Promise<Task[]> {
-    return await this._client.get(`boards/${listId}/tasks`).then((response) => response.data);
+    return await this._client.get(`boards/${listId}/tasks`).then((response) => response.data).catch((error) => {
+      console.log(error)
+      return Promise.reject(error)
+    });
   }
 
   async deleteTask(listId: number, taskId: number) {
