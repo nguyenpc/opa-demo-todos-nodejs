@@ -72,6 +72,7 @@ export class UserService {
 export interface IBoardCreate {
   title: string;
   tenantId?: string;
+  userId: string;
 }
 
 export type IBoardUpdate = Partial<IBoardCreate>;
@@ -133,6 +134,7 @@ export interface ITaskCreate {
   title: string;
   description?: string;
   checked?: boolean;
+  userId: string;
 }
 
 export type ITaskUpdate = Partial<ITaskCreate>;

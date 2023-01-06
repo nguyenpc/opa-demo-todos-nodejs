@@ -41,6 +41,7 @@ router.get("", async function (req, res, next) {
 });
 
 router.post("", async function (req, res, next) {
+  const userId: string = req.user.sub; // will not get here unless jwt is valid
   // "validation"
   if (!req.body.title) {
     return res.status(422).json({ errors: { title: "can't be blank" } });
@@ -48,6 +49,7 @@ router.post("", async function (req, res, next) {
 
   const boardData: IBoardCreate = {
     title: req.body.title,
+    userId
   };
 
   try {

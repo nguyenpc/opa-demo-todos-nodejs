@@ -76,6 +76,9 @@ Board.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    userId: {
+      type: DataTypes.STRING,
+    },
   },
   {
     sequelize,
@@ -109,6 +112,9 @@ Task.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    userId: {
+      type: DataTypes.STRING,
     },
   },
   {

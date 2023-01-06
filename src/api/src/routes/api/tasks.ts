@@ -48,6 +48,7 @@ router.post(
     res: express.Response,
     next: express.NextFunction
   ) {
+    const userId: string = req.user.sub; 
     // "validation"
     if (!req.body.title) {
       return res.status(422).json({ errors: { title: "can't be blank" } });
@@ -56,6 +57,7 @@ router.post(
     const taskData: ITaskCreate = {
       boardId: req.board.id,
       title: req.body.title,
+      userId
     };
     TaskService.create(taskData)
       .then((task) => {
