@@ -14,6 +14,8 @@ export class User extends Model {
   public firstName?: string;
   public lastName?: string;
   public idpMetadata?: Record<string, any>;
+  public groups?: Array<string>;
+  public permissions?: Array<string>;
 }
 User.init(
   {

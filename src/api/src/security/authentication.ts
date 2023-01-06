@@ -6,6 +6,7 @@ import axios from "axios";
 import config from "../config";
 import { User } from "../models";
 import { UserService } from "../services";
+import { getUserPermission, userAssignments } from "../auth/constant";
 
 export interface ExpressJwtUser {
   sub: string;
@@ -75,7 +76,9 @@ export default async function requireAuthentication(app: express.Application) {
             })
             .catch(next);
         } else {
-          req.activeUser = user;
+          const userInfo = userAssignments.find(({userId}) => userId === user.id);
+          const userPermission = getUserPermission(user);
+          req.activeUser = { ...user, groups: userInfo?.groups, permissions: userPermission };  
           next();
         }
       })

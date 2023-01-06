@@ -10,6 +10,9 @@ router.get(
     res: express.Response,
     next: express.NextFunction
   ) {
+    // call rego to check if user has permission create_task
+    // console.log(req.activeUser.permissions)
+    return res.status(401).json({message: 'unauthorized'}).status(401)
     TaskService.getAllInBoard(req.board.id)
       .then((tasks) => {
         return res.json(tasks.map((t) => t.toJSON()));
@@ -28,6 +31,7 @@ router.get(
     const taskId = req.params.taskId;
     TaskService.get(taskId, req.board.id)
       .then((task) => {
+        throw new Error("permission");
         if (!task) {
           return res.status(404).send("task not found!");
         }

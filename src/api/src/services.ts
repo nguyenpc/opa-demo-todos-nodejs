@@ -12,6 +12,8 @@ export interface IUserCreate {
   lastName?: string;
   idpMetadata?: Dictionary<string>;
   permissionsUserId?: string;
+  groups?: Array<string>;
+  permissions?: Array<string>;
 }
 
 export type IUserUpdate = Partial<IUserCreate>;
