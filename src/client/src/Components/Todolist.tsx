@@ -318,7 +318,7 @@ export default function Todolist({ tasks }) {
                       }}
                       /*secondaryTypographyProps={{onClick:()=>{setEditingDescId(task.id);  setEditedDesc(task.description)}}}*/
                       primary={task.title}
-                      secondary={task.description}
+                      secondary={`created By ${task.email}`}
                     />
                   )}
                   <ListItemSecondaryAction>

@@ -33,6 +33,8 @@ router.param(
 
 router.get("", async function (req, res, next) {
   const user = req.activeUser;
+  const name: string = `${req.activeUser.firstName} ${req.activeUser.lastName}`; // will not get here unless jwt is valid
+  console.log(name);
   BoardService.getAll()
     .then((boards) => {
       return res.json(boards.map((b) => b.toJSON()));
@@ -41,7 +43,8 @@ router.get("", async function (req, res, next) {
 });
 
 router.post("", async function (req, res, next) {
-  const userId: string = req.user.sub; // will not get here unless jwt is valid
+  const userId: string = req.activeUser.id; // will not get here unless jwt is valid
+  const name: string = `${req.activeUser.firstName} ${req.activeUser.lastName}`; // will not get here unless jwt is valid
   // "validation"
   if (!req.body.title) {
     return res.status(422).json({ errors: { title: "can't be blank" } });

@@ -15,7 +15,7 @@ export interface ExpressJwtUser {
 declare module "express-serve-static-core" {
   interface Request {
     user?: ExpressJwtUser;
-    activeUser?: User;
+    activeUser?: any;
   }
 }
 
@@ -76,9 +76,12 @@ export default async function requireAuthentication(app: express.Application) {
             })
             .catch(next);
         } else {
-          const userInfo = userAssignments.find(({userId}) => userId === user.id);
+          const userInfo = userAssignments.find(({email}) => email === user.email);
           const userPermission = getUserPermission(user);
-          req.activeUser = { ...user, groups: userInfo?.groups, permissions: userPermission };  
+          const actUser: any = user;
+          actUser.groups = userInfo?.groups || [];
+          actUser.permissions = userPermission || [];
+          req.activeUser = actUser;  
           next();
         }
       })

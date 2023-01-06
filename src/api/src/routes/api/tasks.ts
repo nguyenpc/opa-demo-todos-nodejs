@@ -1,5 +1,7 @@
 import express from "express";
 import { TaskService, ITaskCreate, ITaskUpdate } from "../../services";
+import { pdpCall } from "../../auth/authz.service";
+import { permissions } from "../../auth/constant";
 
 const router = express.Router({ mergeParams: true });
 
@@ -12,7 +14,10 @@ router.get(
   ) {
     // call rego to check if user has permission create_task
     // console.log(req.activeUser.permissions)
-    return res.status(401).json({message: 'unauthorized'}).status(401)
+    const isPermitted = await pdpCall(req.activeUser, {}, "task", permissions.read_task);
+    if(!isPermitted) {
+      return res.status(401).json({message: "unauthorized"});
+    }
     TaskService.getAllInBoard(req.board.id)
       .then((tasks) => {
         return res.json(tasks.map((t) => t.toJSON()));
@@ -30,10 +35,14 @@ router.get(
   ) {
     const taskId = req.params.taskId;
     TaskService.get(taskId, req.board.id)
-      .then((task) => {
-        throw new Error("permission");
+      .then(async (task) => {
+
         if (!task) {
           return res.status(404).send("task not found!");
+        }
+        const isPermitted = await pdpCall(req.activeUser, task, "task", permissions.read_task);
+        if(!isPermitted) {
+          return res.status(401).json({message: "unauthorized"});
         }
         return res.json(task.toJSON());
       })
@@ -48,7 +57,13 @@ router.post(
     res: express.Response,
     next: express.NextFunction
   ) {
-    const userId: string = req.user.sub; 
+
+    const isPermitted = await pdpCall(req.activeUser, null, "task", permissions.create_task);
+    if(!isPermitted) {
+      return res.status(401).json({message: "unauthorized"});
+    }
+    const userId: string = req.activeUser.id; 
+    const email: string = req.activeUser.email;
     // "validation"
     if (!req.body.title) {
       return res.status(422).json({ errors: { title: "can't be blank" } });
@@ -57,7 +72,8 @@ router.post(
     const taskData: ITaskCreate = {
       boardId: req.board.id,
       title: req.body.title,
-      userId
+      userId,
+      email,
     };
     TaskService.create(taskData)
       .then((task) => {
@@ -86,6 +102,12 @@ router.put(
     if (req.body.checked !== null && req.body.checked !== undefined) {
       update.checked = req.body.checked;
     }
+    const taskDetail = await TaskService.get(taskId, req.board.id);
+
+    const isPermitted = await pdpCall(req.activeUser, taskDetail, "task", permissions.update_task);
+    if(!isPermitted) {
+      return res.status(401).json({message: "unauthorized"});
+    }
 
     const task = await TaskService.update(taskId, update);
     if (task === null) {
@@ -108,6 +130,10 @@ router.delete(
 
     if (!task) {
       return res.status(404).send("task not found!");
+    }
+    const isPermitted = await pdpCall(req.activeUser, task, "task", permissions.delete_task);
+    if(!isPermitted) {
+      return res.status(401).json({message: "unauthorized"});
     }
 
     TaskService.remove(taskId)

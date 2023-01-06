@@ -116,6 +116,9 @@ Task.init(
     userId: {
       type: DataTypes.STRING,
     },
+    email: {
+      type: DataTypes.STRING,
+    },
   },
   {
     sequelize,

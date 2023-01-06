@@ -24,7 +24,7 @@ export class UserService {
   }
 
   static async getByUserId(userId: string): Promise<User | null> {
-    return await User.findOne({ where: { userId: userId } });
+    return await User.findOne({ where: { userId: userId }, raw: true });
   }
 
   static async create(data: IUserCreate): Promise<User> {
@@ -135,6 +135,7 @@ export interface ITaskCreate {
   description?: string;
   checked?: boolean;
   userId: string;
+  email?: string
 }
 
 export type ITaskUpdate = Partial<ITaskCreate>;
@@ -146,11 +147,12 @@ export class TaskService {
         id: taskId,
         boardId: boardId,
       },
-    });
+      raw: true,
+    },);
   }
 
-  static async getById(taskId: string): Promise<Task | null> {
-    return await Task.findByPk(taskId);
+  static async getById(taskId: string, raw = true): Promise<Task | null> {
+    return await Task.findByPk(taskId, { raw});
   }
 
   static async getAllInBoard(boardId: string): Promise<Task[]> {
@@ -166,7 +168,7 @@ export class TaskService {
   }
 
   static async update(taskId: string, data: ITaskUpdate): Promise<Task | null> {
-    const task = await TaskService.getById(taskId);
+    const task = await TaskService.getById(taskId, false);
     if (task !== null && task !== undefined) {
       return await task.update(data);
     } else {

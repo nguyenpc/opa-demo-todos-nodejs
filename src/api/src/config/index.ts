@@ -6,9 +6,11 @@ export interface Auth0Config {
 
 export interface ConfigOptions {
   auth0: Auth0Config;
+  opaUri: string;
 }
 
 const Config: ConfigOptions = {
+  opaUri: process.env.OPA_URI || "http://localhost:8181/",
   auth0: {
     domain: process.env.AUTH0_DOMAIN
       ? process.env.AUTH0_DOMAIN
@@ -19,5 +21,6 @@ const Config: ConfigOptions = {
     algorithms: ["RS256"],
   },
 };
+
 
 export default Config;
